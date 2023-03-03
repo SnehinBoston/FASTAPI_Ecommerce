@@ -1,0 +1,44 @@
+resources:
+- name: main
+  type: git
+  icon: github
+  source:
+    uri: https://SnehinBoston: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@github.com/SnehinBoston/fastapi_ecommerce.git
+    branch: main
+    # username: SnehinBoston
+    # password: Mphasis1234.
+jobs:
+- name: create-a-commit
+  build_logs_to_retain: 3
+  plan:
+  - get: main
+  - task: commit-and-tag
+    config:
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: gitea/gitea # use any image that has the git cli
+      inputs:
+      - name: main
+      outputs:
+      # to pass the commit to the following steps specify
+      # the "repo-main" as an output as well
+      - name: main
+      run:
+        path: sh
+        args:
+        - -cx
+        # this is just a bash script
+        - |
+          cd main
+          git config --global user.email "snehgurdasani1@outlook.com"
+          git config --global user.name "SnehinBoston"
+          git add -A
+          git commit -m "Fast API changes"
+          git tag v0.1.6
+          git status
+  # push commit and tag
+  - put: main
+    params:
+      repository: main
